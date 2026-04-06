@@ -177,14 +177,33 @@ class NaiveBayesClassifier:
             "matchedFeatures": [f[0] for f in sorted(matched_features, key=lambda x: abs(x[1]), reverse=True)[:12]]
         }
 
-TRAINING_DATA = [
-    {"text": "恭喜你中奖了，点击领取奖金", "isSpam": True},
-    {"text": "您的账户存在异常，请立即修改密码", "isSpam": True},
-    {"text": "特价优惠，最后一天，不容错过", "isSpam": True},
-    {"text": "明天下午三点开会，请准时参加", "isSpam": False},
-    {"text": "关于下周项目的进度报告，请查收", "isSpam": False},
-    {"text": "你好，好久不见，最近怎么样？", "isSpam": False},
-]
+# 加载训练数据
+def load_training_data():
+    try:
+        with open('src/data/spam_examples.json', 'r', encoding='utf-8') as f:
+            spam_list = json.load(f)
+        with open('src/data/ham_examples.json', 'r', encoding='utf-8') as f:
+            ham_list = json.load(f)
+        
+        data = []
+        for text in spam_list:
+            data.append({"text": text, "isSpam": True})
+        for text in ham_list:
+            data.append({"text": text, "isSpam": False})
+        return data
+    except Exception as e:
+        st.error(f"加载训练数据失败: {str(e)}")
+        # 回退到默认的小型数据集
+        return [
+            {"text": "恭喜你中奖了，点击领取奖金", "isSpam": True},
+            {"text": "您的账户存在异常，请立即修改密码", "isSpam": True},
+            {"text": "特价优惠，最后一天，不容错过", "isSpam": True},
+            {"text": "明天下午三点开会，请准时参加", "isSpam": False},
+            {"text": "关于下周项目的进度报告，请查收", "isSpam": False},
+            {"text": "你好，好久不见，最近怎么样？", "isSpam": False},
+        ]
+
+TRAINING_DATA = load_training_data()
 classifier = NaiveBayesClassifier(TRAINING_DATA)
 
 # --- 4. 状态管理 ---
